@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat with {{ other_user.first_name }}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+
+<header class="bg-gray-800 p-4 flex justify-between items-center shadow">
+  <h1 class="text-xl font-bold text-orange-400">Chat with {{ other_user.first_name }}</h1>
+  <a href="{% url 'chat_list' %}" class="bg-orange-500 px-4 py-2 rounded-lg hover:bg-orange-600">← Back</a>
+</header>
+
+<main class="flex-1 p-6 overflow-y-auto space-y-4">
+  {% for msg in messages %}
+    <div class="{% if msg.sender == request.user %}text-right{% else %}text-left{% endif %}">
+      <div class="{% if msg.sender == request.user %}bg-orange-500{% else %}bg-gray-700{% endif %} inline-block px-4 py-2 rounded-xl shadow">
+        <p>{{ msg.content }}</p>
+        <span class="text-xs text-gray-300">{{ msg.created_at|date:"M d, H:i" }}</span>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-gray-400 text-center">No messages yet.</p>
+  {% endfor %}
+</main>
+
+{% if not chat_locked %}
+<form method="post" action="{% url 'send_message' other_user.id %}" class="bg-gray-800 p-4 flex space-x-4">
+  {% csrf_token %}
+  <input type="text" name="message" placeholder="Type your message..." required
+         class="flex-1 p-2 rounded-lg bg-gray-700 text-white focus:outline-none">
+  <button type="submit" class="bg-orange-500 px-6 py-2 rounded-lg hover:bg-orange-600">Send</button>
+</form>
+{% else %}
+<div class="bg-gray-800 p-4 text-center text-gray-400">
+  Chat locked — no active ride with {{ other_user.first_name }}.
+</div>
+{% endif %}
+
+</body>
+</html>

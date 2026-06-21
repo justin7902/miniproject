@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Wallet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            carrot: "#FF6B35",
+            dark: "#0f1419",
+            card: "#1e2832"
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gradient-to-br from-dark via-slate-900 to-blue-900 text-white min-h-screen">
+  <!-- Header -->
+  <header class="bg-card/90 backdrop-blur-lg border-b border-gray-700 p-4 shadow-lg">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-carrot">My Wallet</h1>
+      <a href="{% url 'user_home' %}" class="px-4 py-2 rounded-xl bg-carrot hover:bg-orange-600 transition">
+        ← Dashboard
+      </a>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-6xl mx-auto p-6 space-y-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Balance card -->
+      <div class="md:col-span-1 bg-card/80 backdrop-blur-lg p-6 rounded-2xl shadow-md border border-gray-700">
+        <h2 class="text-xl font-semibold text-white mb-2">Balance</h2>
+        <p class="text-4xl font-bold text-carrot">₹{{ wallet.balance|floatformat:2 }}</p>
+
+        <form action="{% url 'wallet_topup' %}" method="post" class="mt-6">
+          {% csrf_token %}
+          <label class="text-gray-300">Top-up amount (₹)</label>
+          <input name="topup_amount" type="number" step="0.01" required
+                 class="w-full mt-2 p-3 rounded-lg bg-slate-800 border border-gray-600 text-white"
+                 placeholder="e.g. 200"/>
+          <button type="submit"
+                  class="mt-4 w-full bg-green-600 hover:bg-green-700 py-2 rounded-xl font-semibold transition">
+            Top Up
+          </button>
+        </form>
+
+        <a href="{% url 'payment_history' %}" class="block mt-4 text-sm text-gray-300 underline">
+          View full payment history
+        </a>
+      </div>
+
+      <!-- Quick pay for bookings -->
+      <div class="md:col-span-2 bg-card/80 backdrop-blur-lg p-6 rounded-2xl shadow-md border border-gray-700">
+        <h2 class="text-xl font-semibold text-white mb-4">Quick Pay</h2>
+
+        {% for b in due %}
+          <div class="bg-slate-800 rounded-lg p-4 mb-4 border border-gray-600 hover:border-carrot transition">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="font-semibold">
+                  Ride #{{ b.ride.id }} • {{ b.ride_date }} {{ b.ride_time }}
+                </p>
+                <p class="text-gray-300 text-sm">Pickup: {{ b.pickup_place }} — Drop: {{ b.drop_place }}</p>
+                <p class="text-gray-300 text-sm mt-1">Your share: ₹{{ b.rider_share|floatformat:2 }}</p>
+              </div>
+              <div class="text-right">
+                <a href="{% url 'wallet_pay' b.id %}"
+                   class="inline-block bg-carrot hover:bg-orange-600 px-4 py-2 rounded-lg transition">
+                  Pay
+                </a>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <p class="text-gray-400">No booked rides to pay (from your BookedRide list).</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Recent payments -->
+    <section class="bg-card/80 backdrop-blur-lg p-6 rounded-2xl shadow-md border border-gray-700">
+      <h3 class="text-lg font-semibold mb-3">Recent Transactions</h3>
+      {% if payments %}
+        <ul class="space-y-3">
+          {% for p in payments %}
+            <li class="flex justify-between bg-slate-800 p-3 rounded-lg border border-gray-700 hover:border-carrot transition">
+              <div>
+                <p class="font-medium">
+                  {{ p.payment_mode }} {% if p.ride %}for Ride #{{ p.ride.id }}{% endif %}
+                </p>
+                <p class="text-gray-300 text-sm">{{ p.payment_date|date:"Y-m-d H:i" }}</p>
+              </div>
+              <div class="text-right">
+                <p class="font-semibold text-carrot">₹{{ p.amount_paid|floatformat:2 }}</p>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-gray-400">No transactions yet.</p>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>

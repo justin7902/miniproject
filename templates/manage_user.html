@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Users</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    body {
+        background: linear-gradient(135deg, #1f2937, #0f172a);
+    }
+    .block-btn {
+        background-color: #ef4444; /* red */
+        color: white;
+        transition: background-color 0.3s ease;
+    }
+    .block-btn:hover {
+        background-color: #dc2626;
+    }
+    .unblock-btn {
+        background-color: #10b981; /* green */
+        color: white;
+        transition: background-color 0.3s ease;
+    }
+    .unblock-btn:hover {
+        background-color: #059669;
+    }
+</style>
+</head>
+<body class="text-white font-sans min-h-screen">
+
+<!-- Header -->
+<header class="bg-gray-800 p-4 shadow-lg">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-orange-400">Manage Users</h1>
+        <a href="{% url 'admin_home' %}" class="px-4 py-2 bg-orange-500 rounded-lg hover:bg-orange-600">← Dashboard</a>
+    </div>
+</header>
+
+<main class="max-w-7xl mx-auto p-8">
+    <h2 class="text-2xl font-bold text-orange-400 mb-6 text-center">User Management</h2>
+
+    <div class="overflow-x-auto bg-gray-900 rounded-lg shadow-lg p-4">
+        <table class="min-w-full divide-y divide-gray-700">
+            <thead class="bg-gray-800">
+                <tr>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">ID</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">Name</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">Email</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">Role</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-white">Status</th>
+                    <th class="px-6 py-3 text-center text-sm font-semibold text-white">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-700">
+                {% for user in users %}
+                <tr class="hover:bg-gray-800">
+                    <td class="px-6 py-4">{{ user.id }}</td>
+                    <td class="px-6 py-4">{{ user.first_name }} {{ user.last_name }}</td>
+                    <td class="px-6 py-4">{{ user.email }}</td>
+                    <td class="px-6 py-4 capitalize">{{ user.role }}</td>
+                    <td class="px-6 py-4">
+                        {% if user.is_blocked == "yes" %}
+                            <span class="px-2 py-1 bg-red-600 rounded-full text-sm">Blocked</span>
+                        {% else %}
+                            <span class="px-2 py-1 bg-green-600 rounded-full text-sm">Active</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        {% if user.is_blocked == "yes" %}
+                        <form method="post" action="{% url 'unblock_user' user.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="unblock-btn px-4 py-2 rounded-lg text-sm">Unblock</button>
+                        </form>
+                        {% else %}
+                        <form method="post" action="{% url 'block_user' user.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="block-btn px-4 py-2 rounded-lg text-sm">Block</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-6 py-4 text-center text-gray-400">No users found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<footer class="bg-gray-800 text-gray-400 text-center p-4 mt-8">
+    © 2025 RideShare Admin Panel
+</footer>
+</body>
+</html>

@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Vehicles</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1f2937, #0f172a);
+    }
+    .approve-btn {
+      background-color: #10b981; /* Green */
+      color: white;
+      transition: all 0.3s ease;
+    }
+    .approve-btn:hover {
+      background-color: #34d399;
+      transform: scale(1.05);
+    }
+    .reject-btn {
+      background-color: #ef4444; /* Red */
+      color: white;
+      transition: all 0.3s ease;
+      margin-left: 0.5rem;
+    }
+    .reject-btn:hover {
+      background-color: #f87171;
+      transform: scale(1.05);
+    }
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #f59e0b;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body class="text-white font-sans min-h-screen">
+
+<!-- Header -->
+<header class="bg-gray-800 p-4 shadow-lg">
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-orange-400">Manage Vehicles</h1>
+    <a href="{% url 'admin_home' %}" class="px-4 py-2 bg-orange-500 rounded-lg hover:bg-orange-600">← Dashboard</a>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto p-8 space-y-16">
+
+  <!-- PENDING VEHICLES SECTION -->
+  <section>
+    <h2 class="section-title">Pending Vehicle Approvals</h2>
+
+    {% if pending_vehicles %}
+    <div class="overflow-x-auto bg-gray-900 rounded-lg shadow-lg p-4">
+      <table class="min-w-full divide-y divide-gray-700">
+        <thead class="bg-gray-800">
+          <tr>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Owner</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Vehicle No</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Brand</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Model</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Type</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Capacity</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Status</th>
+            <th class="px-6 py-3 text-center text-sm font-semibold text-white">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-700">
+          {% for vehicle in pending_vehicles %}
+          <tr class="hover:bg-gray-800">
+            <td class="px-6 py-4">{{ vehicle.owner.first_name }} {{ vehicle.owner.last_name }}</td>
+            <td class="px-6 py-4">{{ vehicle.vehicle_number }}</td>
+            <td class="px-6 py-4">{{ vehicle.brand }}</td>
+            <td class="px-6 py-4">{{ vehicle.model }}</td>
+            <td class="px-6 py-4">{{ vehicle.vehicle_type }}</td>
+            <td class="px-6 py-4">{{ vehicle.capacity }}</td>
+            <td class="px-6 py-4">
+              <span class="px-2 py-1 bg-yellow-600 rounded-full text-sm">Pending</span>
+            </td>
+            <td class="px-6 py-4 text-center flex justify-center">
+              
+              <!-- Approve Form -->
+              <form method="post" action="{% url 'approve_vehicle' vehicle.id %}">
+                {% csrf_token %}
+                <button type="submit" class="approve-btn px-4 py-2 rounded-lg text-sm">Approve</button>
+              </form>
+
+              <!-- Reject Form -->
+              <form method="post" action="{% url 'reject_vehicle' vehicle.id %}" onsubmit="return confirmReject(event)">
+                {% csrf_token %}
+                <button type="submit" class="reject-btn px-4 py-2 rounded-lg text-sm">Reject</button>
+              </form>
+
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-center text-gray-400">No pending vehicle approvals.</p>
+    {% endif %}
+  </section>
+
+  <!-- APPROVED VEHICLES SECTION -->
+  <section>
+    <h2 class="section-title">Registered Vehicles</h2>
+
+    {% if approved_vehicles %}
+    <div class="overflow-x-auto bg-gray-900 rounded-lg shadow-lg p-4">
+      <table class="min-w-full divide-y divide-gray-700">
+        <thead class="bg-green-800">
+          <tr>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Owner</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Vehicle No</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Brand</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Model</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Type</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Color</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Capacity</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Mileage</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-700">
+          {% for vehicle in approved_vehicles %}
+          <tr class="hover:bg-gray-800">
+            <td class="px-6 py-4">{{ vehicle.owner.first_name }} {{ vehicle.owner.last_name }}</td>
+            <td class="px-6 py-4">{{ vehicle.vehicle_number }}</td>
+            <td class="px-6 py-4">{{ vehicle.brand }}</td>
+            <td class="px-6 py-4">{{ vehicle.model }}</td>
+            <td class="px-6 py-4">{{ vehicle.vehicle_type }}</td>
+            <td class="px-6 py-4">{{ vehicle.color|default:"—" }}</td>
+            <td class="px-6 py-4">{{ vehicle.capacity }}</td>
+            <td class="px-6 py-4">{{ vehicle.mileage|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-center text-gray-400">No registered vehicles found.</p>
+    {% endif %}
+  </section>
+
+</main>
+
+<footer class="bg-gray-800 text-gray-400 text-center p-4 mt-8">
+  © 2025 RideShare Admin Panel
+</footer>
+
+<script>
+  function confirmReject(event) {
+    if (!confirm("Are you sure you want to reject this vehicle?")) {
+      event.preventDefault();
+      return false;
+    }
+    return true;
+  }
+</script>
+
+</body>
+</html>

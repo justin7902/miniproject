@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RideShare - Edit Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'carrot': '#FF6B35',
+                        'carrot-dark': '#E55A2B',
+                        'dark-bg': '#0f1419',
+                        'dark-card': '#1e2832',
+                        'blue-accent': '#2563eb',
+                        'blue-dark': '#1d4ed8'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .form-input {
+            background: #0f1419;
+            border: 1px solid #4b5563;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            border-color: #FF6B35;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+        .form-select {
+            background: #0f1419;
+            border: 1px solid #4b5563;
+            color: white;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+        .form-select:focus {
+            border-color: #FF6B35;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+        .preference-card {
+            background: linear-gradient(135deg, rgba(30, 40, 50, 0.8) 0%, rgba(15, 20, 25, 0.9) 100%);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            transition: all 0.3s ease;
+        }
+        .preference-card:hover {
+            border-color: rgba(255, 107, 53, 0.5);
+            transform: translateY(-2px);
+        }
+        .radio-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+        }
+        .radio-option {
+            position: relative;
+            cursor: pointer;
+        }
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+        .radio-option label {
+            display: block;
+            padding: 0.5rem 1rem;
+            background: rgba(15, 20, 25, 0.8);
+            border: 1px solid #4b5563;
+            border-radius: 0.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+        .radio-option input[type="radio"]:checked + label {
+            background: rgba(255, 107, 53, 0.2);
+            border-color: #FF6B35;
+            color: #FF6B35;
+        }
+        .radio-option:hover label {
+            border-color: #FF6B35;
+        }
+        .section-divider {
+            background: linear-gradient(90deg, transparent 0%, #FF6B35 50%, transparent 100%);
+            height: 1px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-dark-bg via-slate-900 to-blue-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-dark-card/90 backdrop-blur-sm shadow-lg border-b border-blue-800/30 p-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center">
+                <svg class="w-8 h-8 text-carrot mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                <h1 class="text-2xl font-bold">Edit Profile</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors">
+                    Cancel
+                </button>
+                <a href="{% url 'user_home'%}" class="bg-carrot hover:bg-carrot-dark px-4 py-2 rounded-lg transition-colors">
+                    ← Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto p-6">
+        <form method="post" enctype="multipart/form-data" class="space-y-8">
+            {% csrf_token %}
+            
+            <!-- Profile Picture Section -->
+            <!-- <div class="preference-card rounded-xl p-6">
+                <h2 class="text-2xl font-bold text-carrot mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V21C3 22.11 3.89 23 5 23H19C20.11 23 21 22.11 21 21V9M19 9H14V4H5V21H19V9Z"/>
+                    </svg>
+                    Profile Picture
+                </h2>
+                <div class="flex items-center gap-6">
+                    <div class="w-24 h-24 bg-gradient-to-br from-carrot to-carrot-dark rounded-full flex items-center justify-center text-3xl font-bold">
+                        JD
+                    </div>
+                    <div>
+                        <input type="file" name="profile_picture" accept="image/*" class="form-input rounded-lg p-3 w-full">
+                        <p class="text-sm text-gray-400 mt-2">Upload a new profile picture (JPG, PNG, max 5MB)</p>
+                    </div>
+                </div>
+            </div> -->
+
+            <!-- Basic Information -->
+            <div class="preference-card rounded-xl p-6">
+                <h2 class="text-2xl font-bold text-carrot mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 4a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4z"/>
+                    </svg>
+                    Basic Information
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">First Name *</label>
+                        <input type="text" name="first_name" value='{{user.first_name}}'required 
+                               class="form-input w-full px-4 py-3 rounded-lg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Last Name *</label>
+                        <input type="text" name="last_name" value="{{user.last_name}}" required 
+                               class="form-input w-full px-4 py-3 rounded-lg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Username *</label>
+                        <input type="text" name="username" value="{{user.username}}" required 
+                               class="form-input w-full px-4 py-3 rounded-lg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Email *</label>
+                        <input type="email" name="email" value="{{user.email}}" required 
+                               class="form-input w-full px-4 py-3 rounded-lg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Mobile *</label>
+                        <input type="tel" name="mobile" value="{{user.mobile}}" required 
+                               class="form-input w-full px-4 py-3 rounded-lg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Gender *</label>
+                        <select name="gender" required class="form-select w-full px-4 py-3 rounded-lg">
+                            <option value="">Select Gender</option>
+                            <option value="male" selected>Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                            <option value="prefer_not_to_say">Prefer not to say</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Address</label>
+                    <textarea name="address" rows="3" 
+                              class="form-input w-full px-4 py-3 rounded-lg resize-none"
+                              placeholder="Enter your full address">{{user.address}}</textarea>
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- Ride Preferences -->
+            <div class="preference-card rounded-xl p-6">
+                <h2 class="text-2xl font-bold text-carrot mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z"/>
+                    </svg>
+                    Ride Preferences
+                </h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Gender Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Gender Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="gender_preference" value="no_preference" id="gender_no_pref" checked>
+                                <label for="gender_no_pref">No Preference</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="gender_preference" value="same_gender" id="gender_same">
+                                <label for="gender_same">Same Gender</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="gender_preference" value="opposite_gender" id="gender_opposite">
+                                <label for="gender_opposite">Opposite Gender</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Smoking Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Smoking Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="smoking_preference" value="no_smoking" id="no_smoking" checked>
+                                <label for="no_smoking">No Smoking</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="smoking_preference" value="smoking_ok" id="smoking_ok">
+                                <label for="smoking_ok">Smoking OK</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="smoking_preference" value="no_preference" id="smoking_no_pref">
+                                <label for="smoking_no_pref">No Preference</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Music Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Music Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="music_preference" value="no_music" id="no_music">
+                                <label for="no_music">No Music</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="music_preference" value="soft_music" id="soft_music" checked>
+                                <label for="soft_music">Soft Music</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="music_preference" value="any_music" id="any_music">
+                                <label for="any_music">Any Music</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chatting Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Chatting Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="chatting_preference" value="quiet_ride" id="quiet_ride">
+                                <label for="quiet_ride">Quiet Ride</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="chatting_preference" value="light_chat" id="light_chat" checked>
+                                <label for="light_chat">Light Chat</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="chatting_preference" value="chatty" id="chatty">
+                                <label for="chatty">Chatty</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AC Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">AC Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="ac_preference" value="ac_required" id="ac_required" checked>
+                                <label for="ac_required">AC Required</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="ac_preference" value="no_ac" id="no_ac">
+                                <label for="no_ac">No AC</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="ac_preference" value="ac_flexible" id="ac_flexible">
+                                <label for="ac_flexible">Flexible</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pet Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Pet Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="pet_preference" value="no_pets" id="no_pets" checked>
+                                <label for="no_pets">No Pets</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="pet_preference" value="pets_ok" id="pets_ok">
+                                <label for="pets_ok">Pets OK</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="pet_preference" value="love_pets" id="love_pets">
+                                <label for="love_pets">Love Pets</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mask Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Mask Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="mask_preference" value="mask_required" id="mask_required" checked>
+                                <label for="mask_required">Mask Required</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="mask_preference" value="no_mask" id="no_mask">
+                                <label for="no_mask">No Mask</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="mask_preference" value="mask_flexible" id="mask_flexible">
+                                <label for="mask_flexible">Flexible</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Luggage Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Luggage Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="luggage_preference" value="light_luggage" id="light_luggage" checked>
+                                <label for="light_luggage">Light Only</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="luggage_preference" value="medium_luggage" id="medium_luggage">
+                                <label for="medium_luggage">Medium OK</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="luggage_preference" value="heavy_luggage" id="heavy_luggage">
+                                <label for="heavy_luggage">Heavy OK</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Food Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Food Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="food_preference" value="no_food" id="no_food" checked>
+                                <label for="no_food">No Food</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="food_preference" value="snacks_ok" id="snacks_ok">
+                                <label for="snacks_ok">Snacks OK</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="food_preference" value="meals_ok" id="meals_ok">
+                                <label for="meals_ok">Meals OK</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Child Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Child Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="child_preference" value="no_children" id="no_children">
+                                <label for="no_children">No Children</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="child_preference" value="children_ok" id="children_ok" checked>
+                                <label for="children_ok">Children OK</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="child_preference" value="love_children" id="love_children">
+                                <label for="love_children">Love Children</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stopover Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Stopover Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="stopover_preference" value="no_stops" id="no_stops" checked>
+                                <label for="no_stops">No Stops</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="stopover_preference" value="few_stops" id="few_stops">
+                                <label for="few_stops">Few Stops</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="stopover_preference" value="many_stops" id="many_stops">
+                                <label for="many_stops">Many Stops OK</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Speed Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Speed Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="speed_preference" value="slow_safe" id="slow_safe">
+                                <label for="slow_safe">Slow & Safe</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="speed_preference" value="moderate" id="moderate" checked>
+                                <label for="moderate">Moderate</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="speed_preference" value="fast" id="fast">
+                                <label for="fast">Fast</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- Advanced Preferences -->
+            <div class="preference-card rounded-xl p-6">
+                <h2 class="text-2xl font-bold text-carrot mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+                    </svg>
+                    Advanced Preferences
+                </h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Co-passenger Gender Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Co-passenger Gender</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="copassenger_gender" value="any" id="copass_any" checked>
+                                <label for="copass_any">Any</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="copassenger_gender" value="same" id="copass_same">
+                                <label for="copass_same">Same Gender</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="copassenger_gender" value="mixed" id="copass_mixed">
+                                <label for="copass_mixed">Mixed OK</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ride Type -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Ride Type</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="ride_type" value="shared" id="shared" checked>
+                                <label for="shared">Shared</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="ride_type" value="private" id="private">
+                                <label for="private">Private</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="ride_type" value="both" id="both">
+                                <label for="both">Both</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Payment Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="payment_preference" value="cash" id="cash">
+                                <label for="cash">Cash</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="payment_preference" value="digital" id="digital" checked>
+                                <label for="digital">Digital</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="payment_preference" value="both_payment" id="both_payment">
+                                <label for="both_payment">Both</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Noise Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Noise Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="noise_preference" value="quiet" id="quiet" checked>
+                                <label for="quiet">Quiet</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="noise_preference" value="moderate_noise" id="moderate_noise">
+                                <label for="moderate_noise">Moderate</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="noise_preference" value="noisy_ok" id="noisy_ok">
+                                <label for="noisy_ok">Noisy OK</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comfort Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Comfort Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="comfort_preference" value="basic" id="basic">
+                                <label for="basic">Basic</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="comfort_preference" value="standard" id="standard" checked>
+                                <label for="standard">Standard</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="comfort_preference" value="premium" id="premium">
+                                <label for="premium">Premium</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pickup Flexibility -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Pickup Flexibility</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="pickup_flexibility" value="exact_location" id="exact_pickup">
+                                <label for="exact_pickup">Exact Location</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="pickup_flexibility" value="nearby" id="nearby_pickup" checked>
+                                <label for="nearby_pickup">Nearby OK</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="pickup_flexibility" value="flexible" id="flexible_pickup">
+                                <label for="flexible_pickup">Very Flexible</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Drop Flexibility -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Drop Flexibility</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="drop_flexibility" value="exact_location" id="exact_drop">
+                                <label for="exact_drop">Exact Location</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="drop_flexibility" value="nearby" id="nearby_drop" checked>
+                                <label for="nearby_drop">Nearby OK</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="drop_flexibility" value="flexible" id="flexible_drop">
+                                <label for="flexible_drop">Very Flexible</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detour Preference -->
+                    <div>
+                        <label class="block text-lg font-semibold text-white mb-3">Detour Preference</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="detour_preference" value="no_detours" id="no_detours" checked>
+                                <label for="no_detours">No Detours</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="detour_preference" value="small_detours" id="small_detours">
+                                <label for="small_detours">Small Detours</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="detour_preference" value="detours_ok" id="detours_ok">
+                                <label for="detours_ok">Detours OK</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-end gap-4 pt-6">
+                <button type="button" class="bg-gray-600 hover:bg-gray-700 px-8 py-3 rounded-lg font-medium transition-colors">
+                    Reset to Default
+                </button>
+                <button type="submit" class="bg-carrot hover:bg-carrot-dark px-8 py-3 rounded-lg font-medium transition-colors">
+                    Save Profile
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Success Message (Hidden by default) -->
+    <div id="successMessage" class="fixed top-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg hidden">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            Profile updated successfully!
+        </div>
+    </div>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97e7038e26ca85fc',t:'MTc1Nzc1OTg5NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

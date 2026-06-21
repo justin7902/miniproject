@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Messages</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-slate-900 to-blue-900 text-white min-h-screen">
+
+<header class="bg-gray-800 p-4 shadow-lg">
+  <div class="max-w-6xl mx-auto flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-orange-400">Messages</h1>
+    <a href="{% url 'user_home' %}" class="bg-orange-500 px-4 py-2 rounded-lg hover:bg-orange-600">← Dashboard</a>
+  </div>
+</header>
+
+<main class="max-w-4xl mx-auto mt-10">
+  <h2 class="text-xl font-semibold text-orange-300 mb-4">Active Chats</h2>
+
+  {% if active_partners %}
+    <ul class="space-y-3">
+      {% for partner in active_partners %}
+        <li class="bg-gray-800 p-4 rounded-lg flex justify-between items-center hover:bg-gray-700">
+          <span>{{ partner.first_name }} {{ partner.last_name }}</span>
+          <a href="{% url 'chat_room' partner.id %}" class="text-orange-400 hover:text-orange-300 font-semibold">Open Chat →</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-gray-400">No active chats available.</p>
+  {% endif %}
+</main>
+
+</body>
+</html>

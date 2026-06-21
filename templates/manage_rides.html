@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Rides</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+    }
+    .ride-card {
+      background: #111827;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .ride-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+    }
+    .status-pill {
+      padding: 0.3rem 0.8rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    .status-success {
+      background: #22c55e;
+      color: white;
+    }
+    .status-pending {
+      background: #f97316;
+      color: white;
+    }
+    .status-cancelled {
+      background: #ef4444;
+      color: white;
+    }
+  </style>
+</head>
+<body class="text-white font-sans min-h-screen">
+
+<!-- Header -->
+<header class="bg-gray-800 p-4 shadow-lg">
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-orange-400">Manage Rides</h1>
+    <a href="{% url 'admin_home' %}" class="px-4 py-2 bg-orange-500 rounded-lg hover:bg-orange-600">← Dashboard</a>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto p-8">
+  <h2 class="text-3xl font-bold text-orange-400 text-center mb-8">🚗 All Booked Rides</h2>
+
+  {% if rides %}
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {% for ride in rides %}
+      <div class="ride-card">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-bold text-orange-400">Ride #{{ ride.id }}</h3>
+          <span class="status-pill 
+            {% if ride.rider_status == 'Completed' or ride.driver_status == 'Completed' %}
+              status-success
+            {% elif ride.rider_status == 'Cancelled' or ride.driver_status == 'Cancelled' %}
+              status-cancelled
+            {% else %}
+              status-pending
+            {% endif %}">
+            {{ ride.rider_status|default:"Pending" }}
+          </span>
+        </div>
+
+        <p class="text-sm text-gray-300 mb-2"><strong>📍 Pickup:</strong> {{ ride.pickup_place }}</p>
+        <p class="text-sm text-gray-300 mb-2"><strong>🏁 Drop:</strong> {{ ride.drop_place }}</p>
+        <p class="text-sm text-gray-300 mb-2"><strong>📅 Date:</strong> {{ ride.ride_date }} {{ ride.ride_time }}</p>
+
+        <div class="mt-4 border-t border-gray-700 pt-3">
+          <p class="text-sm"><strong>👤 Rider:</strong> {{ ride.rider.first_name }} {{ ride.rider.last_name }}</p>
+          <p class="text-sm"><strong>🧑‍✈️ Driver:</strong> {{ ride.driver.first_name }} {{ ride.driver.last_name }}</p>
+          <p class="text-sm"><strong>   Cancel Reason:</strong> {{ ride.cancel_reason }}</p>
+          <p class="text-sm"><strong>🚘 Vehicle:</strong> 
+            {% if ride.vehicle %}
+              {{ ride.vehicle.brand }} {{ ride.vehicle.model }} ({{ ride.vehicle.vehicle_number }})
+            {% else %}
+              <span class="italic text-gray-500">No vehicle</span>
+            {% endif %}
+          </p>
+        </div>
+
+        <div class="mt-4 flex justify-between items-center">
+          <span class="text-orange-400 font-bold">💰 ₹{{ ride.total_cost }}</span>
+          <span class="text-gray-300 text-sm">Seats: {{ ride.seats_booked }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-center text-gray-400">No rides found.</p>
+  {% endif %}
+</main>
+
+<footer class="bg-gray-800 text-gray-400 text-center p-4 mt-8">
+  © 2025 RideShare Admin Panel
+</footer>
+</body>
+</html>

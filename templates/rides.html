@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            carrot: "#FF6B35",
+            "carrot-dark": "#E55A2B",
+            dark: "#0f1419",
+            card: "#1e2832"
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gradient-to-br from-dark via-slate-900 to-blue-900 text-white min-h-screen">
+  <!-- Header -->
+  <header class="bg-card/90 backdrop-blur-lg border-b border-gray-700 p-4 shadow-lg">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <svg class="w-8 h-8 text-carrot" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z"/>
+        </svg>
+        <h1 class="text-2xl font-bold">My Bookings</h1>
+      </div>
+      <a href="{% url 'user_home' %}" class="px-4 py-2 rounded-xl bg-carrot hover:bg-carrot-dark transition">
+        Dashboard
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-6xl mx-auto p-6">
+    {% if bookings %}
+      <div class="grid md:grid-cols-2 gap-6">
+        {% for booking in bookings %}
+          <div class="bg-card/80 backdrop-blur p-5 rounded-2xl border border-gray-700 shadow-md hover:shadow-lg hover:border-carrot transition">
+            <h3 class="text-xl font-semibold mb-3 text-carrot">
+              🚗 Ride with {{ booking.driver.first_name }} {{ booking.driver.last_name }}
+            </h3>
+            <p class="text-gray-300"><strong>Car:</strong> {{ booking.vehicle.brand }} {{ booking.vehicle.model }}</p>
+            <p class="text-gray-300"><strong>Your Requested Date:</strong> {{ booking.date }} at {{ booking.time }}</p>
+            <p class="text-gray-300"><strong>Ride Date:</strong> {{ booking.ride_date }} at {{ booking.ride_time }}</p>
+            <p class="text-gray-300"><strong>Pickup:</strong> {{ booking.pickup_lat }}, {{ booking.pickup_lng }}</p>
+            <p class="text-gray-300"><strong>Drop:</strong> {{ booking.drop_lat }}, {{ booking.drop_lng }}</p>
+            <p class="text-gray-300"><strong>Seats Booked:</strong> {{ booking.seats_booked }}</p>
+            <p class="text-gray-300"><strong>Total Trip Distance:</strong> {{ booking.total_distance }} km</p>
+            <p class="text-gray-300"><strong>Your Distance:</strong> {{ booking.rider_distance }} km</p>
+            <p class="text-gray-300"><strong>Total Cost:</strong> ₹{{ booking.total_cost }}</p>
+            <p class="text-gray-300 mb-3"><strong>Your Share:</strong> ₹{{ booking.rider_share }}</p>
+
+            <!-- Preferences Dropdown -->
+            <!-- <details class="bg-gray-800/50 rounded-xl p-3 border border-gray-700">
+              <summary class="cursor-pointer text-carrot font-semibold hover:text-carrot-dark">
+                View Preferences
+              </summary>
+              <ul class="mt-3 space-y-1 text-gray-300">
+                {% for key, value in booking.preferences.items %}
+                  <li><span class="font-medium">{{ key|capfirst }}:</span> {{ value }}</li>
+                {% endfor %}
+              </ul>
+            </details> -->
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-center text-gray-400 text-lg mt-10">No bookings found. 🚫</p>
+    {% endif %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Rides</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-slate-900 to-blue-900 text-white min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-gray-800 border-b border-gray-700 p-4 shadow-lg">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-orange-400">My Rides</h1>
+      <a href="{% url 'user_home' %}" 
+         class="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 transition">
+        ← Dashboard
+      </a>
+    </div>
+  </header>
+
+  <!-- Navigation Anchors -->
+  <nav class="max-w-6xl mx-auto flex justify-center space-x-8 p-6">
+    <a href="javascript:void(0);" onclick="showSection('completedRides')" class="text-xl font-bold text-white bg-orange-500 px-6 py-3 rounded-full shadow-lg hover:bg-orange-600 transition">Previous Rides</a>
+    <a href="javascript:void(0);" onclick="showSection('cancelledRides')" class="text-xl font-bold text-white bg-orange-500 px-6 py-3 rounded-full shadow-lg hover:bg-orange-600 transition">Cancelled Rides</a>
+  </nav>
+
+  <!-- Section Display Area -->
+  <main class="max-w-6xl mx-auto p-6">
+    <div id="contentArea" class="space-y-8"></div>
+  </main>
+
+  <!-- Templates for Sections -->
+  <template id="completedRidesTemplate">
+    <h2 class="text-2xl font-bold text-orange-400 mb-4">Previous Rides</h2>
+    {% if completed_rides %}
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-gray-800 rounded-lg">
+          <thead class="bg-gray-700">
+            <tr>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-white">Rider</th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-white">Pickup</th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-white">Drop</th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-white">Date</th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-white">Status</th>
+              <th class="px-6 py-3 text-center text-sm font-semibold text-white">Feedback</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-700">
+            {% for ride in completed_rides %}
+            <tr class="hover:bg-gray-700">
+              <td class="px-6 py-3">{{ ride.rider.first_name }} {{ ride.rider.last_name }}</td>
+              <td class="px-6 py-3">{{ ride.pickup_place }}</td>
+              <td class="px-6 py-3">{{ ride.drop_place }}</td>
+              <td class="px-6 py-3">{{ ride.ride_date }} at {{ ride.ride_time }}</td>
+              <td class="px-6 py-3 text-green-400 font-semibold">Completed</td>
+              <td class="px-6 py-3 text-center">
+                {% if ride.driver_feedback|default:"" == "SUBMITTED" %}
+                  <span class="italic text-gray-300 block">{{ ride.driver_feedback }}</span>
+                {% else %}
+                  <a href="{% url 'feedback_driver' ride.id %}" 
+                     class="inline-block px-3 py-1 bg-orange-500 rounded-lg hover:bg-orange-600 text-sm font-semibold">
+                     Give Feedback
+                  </a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-gray-400">No previous rides found.</p>
+    {% endif %}
+  </template>
+
+  <template id="cancelledRidesTemplate">
+    <h2 class="text-2xl font-bold text-orange-400 mb-4">Cancelled Rides</h2>
+    {% if cancelled_rides %}
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-gray-800 rounded-lg">
+          <thead class="bg-gray-700">
+            <tr>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-white">Driver</th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-white">Pickup</th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-white">Drop</th>
+              <th class="px-6 py-3 text-left text-sm font-semibold text-white">Date</th>
+              <th class="px-6 py-3 text-center text-sm font-semibold text-white">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-700">
+            {% for ride in cancelled_rides %}
+            <tr class="hover:bg-gray-700">
+              <td class="px-6 py-3">{{ ride.driver.first_name }} {{ ride.driver.last_name }}</td>
+              <td class="px-6 py-3">{{ ride.pickup_place }}</td>
+              <td class="px-6 py-3">{{ ride.drop_place }}</td>
+              <td class="px-6 py-3">{{ ride.ride_date }} at {{ ride.ride_time }}</td>
+              <td class="px-6 py-3 text-center text-red-400 font-semibold">Cancelled</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-gray-400">No cancelled rides.</p>
+    {% endif %}
+  </template>
+
+  <!-- JavaScript -->
+  <script>
+    function showSection(section) {
+      const contentArea = document.getElementById("contentArea");
+      const templates = {
+        completedRides: document.getElementById("completedRidesTemplate"),
+        cancelledRides: document.getElementById("cancelledRidesTemplate")
+      };
+      contentArea.innerHTML = templates[section].innerHTML;
+      window.scrollTo({ top: contentArea.offsetTop, behavior: 'smooth' });
+    }
+
+    // Show Completed Rides by default
+    document.addEventListener("DOMContentLoaded", function() {
+      showSection("completedRides");
+    });
+  </script>
+
+</body>
+</html>

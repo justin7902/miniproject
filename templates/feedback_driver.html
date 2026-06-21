@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Feedback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .star {
+            font-size: 2rem;
+            color: #ccc;
+            cursor: pointer;
+        }
+        .star.selected {
+            color: gold;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-blue-900 min-h-screen flex items-center justify-center">
+
+<div class="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-lg">
+    <h1 class="text-2xl font-bold text-orange-400 mb-6 text-center">Submit Feedback</h1>
+
+    <!-- Ride Info -->
+    <div class="mb-6 bg-gray-900 p-4 rounded-lg border border-gray-700">
+        <p class="text-white font-semibold">Ride:</p>
+        <p class="text-gray-300">
+            {{ ride.pickup_place }} → {{ ride.drop_place }}  
+            ({{ ride.ride_date }} at {{ ride.ride_time }})
+        </p>
+        <p class="text-white font-semibold mt-2">Driver:</p>
+        <p class="text-gray-300">{{ ride.rider.first_name }} {{ ride.rider.last_name }}</p>
+    </div>
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+
+        <!-- Star Rating -->
+        <label class="block text-white font-semibold">Rating</label>
+        <div id="starRating" class="flex space-x-2">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <input type="hidden" name="rating_value" id="ratingValue" required>
+
+        <!-- Comment -->
+        <label class="block text-white font-semibold">Comment</label>
+        <textarea name="comment" rows="4" placeholder="Write your feedback..."
+                  class="w-full p-2 rounded-lg bg-gray-900 border border-gray-600 text-white"></textarea>
+
+        <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 p-3 rounded-lg font-bold text-white">
+            Submit Feedback
+        </button>
+    </form>
+
+    {% if success %}
+    <p class="text-green-400 mt-4 text-center">Feedback submitted successfully!</p>
+    {% endif %}
+</div>
+
+<script>
+    const stars = document.querySelectorAll(".star");
+    const ratingValue = document.getElementById("ratingValue");
+
+    stars.forEach(star => {
+        star.addEventListener("click", () => {
+            const value = star.getAttribute("data-value");
+            ratingValue.value = value;
+
+            stars.forEach(s => {
+                s.classList.remove("selected");
+            });
+            for (let i = 0; i < value; i++) {
+                stars[i].classList.add("selected");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

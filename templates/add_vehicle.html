@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RideShare - Add Vehicle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'carrot': '#FF6B35',
+                        'carrot-dark': '#E55A2B',
+                        'dark-bg': '#0f1419',
+                        'dark-card': '#1e2832',
+                        'blue-accent': '#2563eb',
+                        'blue-dark': '#1d4ed8'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .form-input {
+            background: #0f1419;
+            border: 1px solid #4b5563;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            border-color: #FF6B35;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+        .form-select {
+            background: #0f1419;
+            border: 1px solid #4b5563;
+            color: white;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+        .form-select:focus {
+            border-color: #FF6B35;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+        .vehicle-card {
+            background: linear-gradient(135deg, rgba(30, 40, 50, 0.8) 0%, rgba(15, 20, 25, 0.9) 100%);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            transition: all 0.3s ease;
+        }
+        .vehicle-card:hover {
+            border-color: rgba(255, 107, 53, 0.5);
+            transform: translateY(-2px);
+        }
+        .feature-checkbox {
+            position: relative;
+            cursor: pointer;
+        }
+        .feature-checkbox input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+        }
+        .feature-checkbox label {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(15, 20, 25, 0.8);
+            border: 1px solid #4b5563;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .feature-checkbox input[type="checkbox"]:checked + label {
+            background: rgba(255, 107, 53, 0.2);
+            border-color: #FF6B35;
+            color: #FF6B35;
+        }
+        .feature-checkbox:hover label {
+            border-color: #FF6B35;
+        }
+        .feature-icon {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+        .section-divider {
+            background: linear-gradient(90deg, transparent 0%, #FF6B35 50%, transparent 100%);
+            height: 1px;
+        }
+        .vehicle-type-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .vehicle-type-option {
+            position: relative;
+            cursor: pointer;
+        }
+        .vehicle-type-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+        .vehicle-type-option label {
+            display: block;
+            padding: 1.5rem;
+            background: rgba(15, 20, 25, 0.8);
+            border: 2px solid #4b5563;
+            border-radius: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .vehicle-type-option input[type="radio"]:checked + label {
+            background: rgba(255, 107, 53, 0.2);
+            border-color: #FF6B35;
+            color: #FF6B35;
+        }
+        .vehicle-type-option:hover label {
+            border-color: #FF6B35;
+        }
+        .features-section {
+            display: none;
+        }
+        .features-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-dark-bg via-slate-900 to-blue-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-dark-card/90 backdrop-blur-sm shadow-lg border-b border-blue-800/30 p-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center">
+                <svg class="w-8 h-8 text-carrot mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z"/>
+                </svg>
+                <h1 class="text-2xl font-bold">Add Vehicle</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="/profile" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg transition-colors">
+                    Cancel
+                </a>
+                <a href="/dashboard" class="bg-carrot hover:bg-carrot-dark px-4 py-2 rounded-lg transition-colors">
+                    ← Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-4xl mx-auto p-6">
+        <form method="POST" action="{% url 'add_vehicle' %}" enctype="multipart/form-data" class="space-y-8" id="vehicleForm">
+            {% csrf_token %}
+            
+            <!-- Vehicle Type Selection -->
+            <div class="vehicle-card rounded-xl p-6">
+                <h2 class="text-2xl font-bold text-carrot mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    Select Vehicle Type
+                </h2>
+                
+                <div class="vehicle-type-selector">
+                    <div class="vehicle-type-option">
+                        <input type="radio" name="type" value="Two Wheeler" id="two_wheeler">
+                        <label for="two_wheeler">
+                            <div class="text-4xl mb-2">🏍️</div>
+                            <div class="text-xl font-bold">Two Wheeler</div>
+                            <div class="text-sm text-gray-400 mt-1">Motorcycle, Scooter, Bike</div>
+                        </label>
+                    </div>
+                    <div class="vehicle-type-option">
+                        <input type="radio" name="type" value="Four Wheeler" id="four_wheeler">
+                        <label for="four_wheeler">
+                            <div class="text-4xl mb-2">🚗</div>
+                            <div class="text-xl font-bold">Four Wheeler</div>
+                            <div class="text-sm text-gray-400 mt-1">Car, SUV, Van</div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic Vehicle Information -->
+            <div class="vehicle-card rounded-xl p-6">
+                <h2 class="text-2xl font-bold text-carrot mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                    Vehicle Information
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Vehicle Number *</label>
+                        <input type="text" name="vehicle_number" required 
+                               placeholder="e.g., ABC-1234 or MH-01-AB-1234"
+                               class="form-input w-full px-4 py-3 rounded-lg uppercase">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Brand *</label>
+                        <input type="text" name="brand" required 
+                               placeholder="e.g., Toyota, Honda, Yamaha"
+                               class="form-input w-full px-4 py-3 rounded-lg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Model *</label>
+                        <input type="text" name="model" required 
+                               placeholder="e.g., Camry, Civic, R15"
+                               class="form-input w-full px-4 py-3 rounded-lg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Color *</label>
+                        <select name="color" required class="form-select w-full px-4 py-3 rounded-lg">
+                            <option value="">Select Color</option>
+                            <option value="white">White</option>
+                            <option value="black">Black</option>
+                            <option value="silver">Silver</option>
+                            <option value="gray">Gray</option>
+                            <option value="red">Red</option>
+                            <option value="blue">Blue</option>
+                            <option value="green">Green</option>
+                            <option value="yellow">Yellow</option>
+                            <option value="orange">Orange</option>
+                            <option value="brown">Brown</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Seating Capacity *</label>
+                        <select name="capacity" required class="form-select w-full px-4 py-3 rounded-lg">
+                            <option value="">Select Capacity</option>
+                            <option value="1">1 Person</option>
+                            <option value="2">2 People</option>
+                            <option value="3">3 People</option>
+                            <option value="4">4 People</option>
+                            <option value="5">5 People</option>
+                            <option value="6">6 People</option>
+                            <option value="7">7 People</option>
+                            <option value="8">8 People</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Vehicle Type *</label>
+                        <select name="vehicle_type" required class="form-select w-full px-4 py-3 rounded-lg">
+                            <option value="">Select Type</option>
+                            <optgroup label="Two Wheeler">
+                                <option value="motorcycle">Motorcycle</option>
+                                <option value="scooter">Scooter</option>
+                                <option value="moped">Moped</option>
+                                <option value="electric_bike">Electric Bike</option>
+                                <option value="sports_bike">Sports Bike</option>
+                                <option value="cruiser">Cruiser</option>
+                            </optgroup>
+                            <optgroup label="Four Wheeler">
+                                <option value="hatchback">Hatchback</option>
+                                <option value="sedan">Sedan</option>
+                                <option value="suv">SUV</option>
+                                <option value="muv">MUV</option>
+                                <option value="van">Van</option>
+                                <option value="pickup_truck">Pickup Truck</option>
+                                <option value="convertible">Convertible</option>
+                                <option value="coupe">Coupe</option>
+                                <option value="wagon">Wagon</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Mileage (km/l) *</label>
+                        <input type="number" name="mileage" required min="1" max="100" step="0.1"
+                               placeholder="e.g., 15.5"
+                               class="form-input w-full px-4 py-3 rounded-lg">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- Two Wheeler Features -->
+        
+
+            <!-- Vehicle Documents
+            <div class="vehicle-card rounded-xl p-6">
+                <h2 class="text-2xl font-bold text-carrot mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                    Vehicle Documents
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Registration Certificate (RC)</label>
+                        <input type="file" name="rc_document" accept="image/*,.pdf" 
+                               class="form-input w-full px-4 py-3 rounded-lg">
+                        <p class="text-sm text-gray-400 mt-1">Upload RC copy (JPG, PNG, PDF - max 5MB)</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Insurance Certificate</label>
+                        <input type="file" name="insurance_document" accept="image/*,.pdf" 
+                               class="form-input w-full px-4 py-3 rounded-lg">
+                        <p class="text-sm text-gray-400 mt-1">Upload insurance copy (JPG, PNG, PDF - max 5MB)</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Pollution Certificate (PUC)</label>
+                        <input type="file" name="puc_document" accept="image/*,.pdf" 
+                               class="form-input w-full px-4 py-3 rounded-lg">
+                        <p class="text-sm text-gray-400 mt-1">Upload PUC certificate (JPG, PNG, PDF - max 5MB)</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Vehicle Photos</label>
+                        <input type="file" name="vehicle_photos" accept="image/*" multiple 
+                               class="form-input w-full px-4 py-3 rounded-lg">
+                        <p class="text-sm text-gray-400 mt-1">Upload vehicle photos (JPG, PNG - max 5MB each)</p>
+                    </div>
+                </div>
+            </div> -->
+
+            <!-- Action Buttons -->
+            <div class="flex justify-end gap-4 pt-6">
+                <button type="button" class="bg-gray-600 hover:bg-gray-700 px-8 py-3 rounded-lg font-medium transition-colors">
+                    Save as Draft
+                </button>
+                <button type="submit" class="bg-carrot hover:bg-carrot-dark px-8 py-3 rounded-lg font-medium transition-colors">
+                    Add Vehicle
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function toggleFeatures() {
+            const twoWheeler = document.getElementById('two_wheeler');
+            const fourWheeler = document.getElementById('four_wheeler');
+            const twoWheelerFeatures = document.getElementById('twoWheelerFeatures');
+            const fourWheelerFeatures = document.getElementById('fourWheelerFeatures');
+            
+            if (twoWheeler.checked) {
+                twoWheelerFeatures.classList.add('active');
+                fourWheelerFeatures.classList.remove('active');
+            } else if (fourWheeler.checked) {
+                fourWheelerFeatures.classList.add('active');
+                twoWheelerFeatures.classList.remove('active');
+            } else {
+                twoWheelerFeatures.classList.remove('active');
+                fourWheelerFeatures.classList.remove('active');
+            }
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97e8c18b80c87766',t:'MTc1Nzc3ODE2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

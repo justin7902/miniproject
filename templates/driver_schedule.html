@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Schedule</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        carrot: "#FF6B35",
+                        dark: "#0f1419",
+                        card: "#1e2832"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gradient-to-br from-dark via-slate-900 to-blue-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-card/90 backdrop-blur-lg border-b border-gray-700 p-4 shadow-lg">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-carrot">Driver Schedule</h1>
+            <a href="{% url 'user_home' %}" class="px-4 py-2 rounded-xl bg-carrot hover:bg-orange-600 transition">
+                ← Dashboard
+            </a>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="max-w-6xl mx-auto p-6">
+        {% if rides_data %}
+            <div class="space-y-8">
+                {% for ride_info in rides_data %}
+                <div class="bg-card/80 backdrop-blur-lg p-6 rounded-2xl shadow-md border border-gray-700 hover:border-carrot transition">
+                    <h3 class="text-2xl font-bold mb-2 text-white">
+                        Ride with {{ ride_info.rider.first_name }} {{ ride_info.rider.last_name }}
+                    </h3>
+                    <p class="text-gray-300"><strong>Car:</strong> {{ ride_info.vehicle.brand }} {{ ride_info.vehicle.model }}</p>
+                    <p class="text-gray-300"><strong>Pickup:</strong> {{ ride_info.pickup_place }}</p>
+                    <p class="text-gray-300"><strong>Drop:</strong> {{ ride_info.drop_place }}</p>
+                    <p class="text-gray-300"><strong>Date:</strong> {{ ride_info.ride_date }} at {{ ride_info.ride_time }}</p>
+                    <p class="text-gray-300"><strong>Total Distance:</strong> {{ ride_info.total_distance }} km</p>
+                    <p class="text-gray-300"><strong>Total Cost:</strong> ₹{{ ride_info.total_cost }}</p>
+                    <p class="text-gray-300"><strong>Total Cost:</strong> ₹{{ ride_info.rider_share }}</p>
+                    <p class="text-gray-300 mb-4"><strong>Status:</strong> {{ ride_info.driver_status }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center text-gray-400 text-lg mt-10">No driver rides found. 🚫</p>
+        {% endif %}
+    </main>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Vehicle</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+<div class="bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-lg">
+    <h1 class="text-3xl font-bold text-orange-400 mb-6 text-center">Edit Vehicle</h1>
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <label class="block">Vehicle Number</label>
+        <input type="text" name="vehicle_number" value="{{ vehicle.vehicle_number }}" class="w-full p-2 rounded-lg bg-gray-900 border border-gray-600">
+
+        <label class="block">Brand</label>
+        <input type="text" name="brand" value="{{ vehicle.brand }}" class="w-full p-2 rounded-lg bg-gray-900 border border-gray-600">
+
+        <label class="block">Model</label>
+        <input type="text" name="model" value="{{ vehicle.model }}" class="w-full p-2 rounded-lg bg-gray-900 border border-gray-600">
+
+        <label class="block">Color</label>
+        <input type="text" name="color" value="{{ vehicle.color }}" class="w-full p-2 rounded-lg bg-gray-900 border border-gray-600">
+
+        <label class="block">Capacity</label>
+        <input type="number" name="capacity" value="{{ vehicle.capacity }}" class="w-full p-2 rounded-lg bg-gray-900 border border-gray-600">
+
+        <label class="block">Vehicle Type</label>
+        <input type="text" name="vehicle_type" value="{{ vehicle.vehicle_type }}" class="w-full p-2 rounded-lg bg-gray-900 border border-gray-600">
+
+        <label class="block">Mileage</label>
+        <input type="number" name="mileage" value="{{ vehicle.mileage }}" class="w-full p-2 rounded-lg bg-gray-900 border border-gray-600">
+
+        <label class="block">Segment</label>
+        <input type="text" name="segment" value="{{ vehicle.segment }}" class="w-full p-2 rounded-lg bg-gray-900 border border-gray-600">
+
+        <label class="block">Features (comma-separated)</label>
+        <input type="text" name="features" value="{{ vehicle.features }}" class="w-full p-2 rounded-lg bg-gray-900 border border-gray-600">
+
+        <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 p-3 rounded-lg font-bold">Save Changes</button>
+    </form>
+</div>
+</body>
+</html>

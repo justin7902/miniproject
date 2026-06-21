@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rider Schedule</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-slate-900 to-blue-900 text-white min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-gray-800 border-b border-gray-700 p-4 shadow-lg">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-orange-400">Rider Schedule</h1>
+      <a href="{% url 'user_home' %}" class="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 transition">
+        ← Dashboard
+      </a>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-6xl mx-auto p-6">
+    {% if rides_data %}
+      <div class="space-y-8">
+        {% for ride_info in rides_data %}
+        <div class="bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-700 hover:border-orange-400 transition">
+
+          <h3 class="text-2xl font-bold mb-2 text-white">
+            Ride with {{ ride_info.driver.first_name }} {{ ride_info.driver.last_name }}
+          </h3>
+          <p class="text-gray-300"><strong>Car:</strong> {{ ride_info.vehicle.brand }} {{ ride_info.vehicle.model }}</p>
+          <p class="text-gray-300"><strong>Pickup:</strong> {{ ride_info.pickup_place }}</p>
+          <p class="text-gray-300"><strong>Drop:</strong> {{ ride_info.drop_place }}</p>
+          <p class="text-gray-300"><strong>Date:</strong> {{ ride_info.ride_date }} at {{ ride_info.ride_time }}</p>
+          <p class="text-gray-300"><strong>Total Distance:</strong> {{ ride_info.total_distance }} km</p>
+          <p class="text-gray-300"><strong>Your Share:</strong> ₹{{ ride_info.rider_share }}</p>
+          <p class="text-gray-300 mb-4"><strong>Status:</strong> {{ ride_info.rider_status }}</p>
+
+          <!-- ✅ Button Section -->
+          <div id="ride-actions-{{ ride_info.id }}" class="mt-4 space-y-2">
+            
+            <!-- Show Start Ride button only when Ready -->
+            {% if ride_info.rider_status == "Ready" %}
+              <form action="{% url 'start_ride' ride_info.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit"
+                        class="w-full px-5 py-2 bg-orange-500 text-white font-semibold rounded-xl shadow hover:bg-orange-600 transition">
+                  ▶ Start Ride
+                </button>
+              </form>
+            {% endif %}
+
+            <!-- Show Finish Ride button only when Riding -->
+            {% if ride_info.rider_status == "Riding" %}
+              <form action="{% url 'finish_ride' ride_info.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit"
+                        class="w-full px-5 py-2 bg-red-600 text-white font-semibold rounded-xl shadow hover:bg-red-700 transition">
+                  ⏹ Finish Ride
+                </button>
+              </form>
+            {% endif %}
+          </div>
+
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-center text-gray-400 text-lg mt-10">No rider rides found. 🚫</p>
+    {% endif %}
+  </main>
+
+</body>
+</html>

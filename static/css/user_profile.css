@@ -1,0 +1,126 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+
+/* Profile Container */
+.profile-container {
+    width: 90%;
+    max-width: 900px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    padding: 40px;
+}
+
+/* Profile Image */
+.profile-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 30px;
+    border-right: 1px solid #e0e0e0;
+}
+
+.profile-image img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #667eea;
+}
+
+/* Profile Details */
+.profile-details {
+    flex: 2;
+    padding-left: 30px;
+}
+
+.profile-details h2 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.profile-details .role {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.profile-details .info p {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #444;
+}
+
+.profile-details .info strong {
+    color: #222;
+}
+
+.actions {
+    margin-top: 30px;
+}
+
+.btn {
+    text-decoration: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    background-color: #667eea;
+    color: white;
+    font-weight: bold;
+    transition: 0.3s;
+    margin-right: 10px;
+    display: inline-block;
+}
+
+.btn:hover {
+    background-color: #5a67d8;
+}
+
+.btn.logout {
+    background-color: #e63946;
+}
+
+.btn.logout:hover {
+    background-color: #d62828;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .profile-container {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .profile-image {
+        padding: 0;
+        border: none;
+        margin-bottom: 20px;
+    }
+
+    .profile-details {
+        padding: 0;
+    }
+
+    .btn {
+        margin-top: 10px;
+    }
+}

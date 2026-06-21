@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Feedback</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+    }
+    .feedback-card {
+      background: #111827;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feedback-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+    }
+    .stars {
+      color: #facc15;
+    }
+  </style>
+</head>
+<body class="text-white font-sans min-h-screen">
+
+<!-- Header -->
+<header class="bg-gray-800 p-4 shadow-lg">
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-orange-400">Manage Feedback</h1>
+    <a href="{% url 'admin_home' %}" class="px-4 py-2 bg-orange-500 rounded-lg hover:bg-orange-600">← Dashboard</a>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto p-8">
+  <h2 class="text-3xl font-bold text-orange-400 text-center mb-8">⭐ User Feedback</h2>
+
+  {% if feedbacks %}
+    <div class="space-y-6">
+      {% for fb in feedbacks %}
+      <div class="feedback-card">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-lg font-bold text-orange-400">Feedback #{{ fb.id }}</h3>
+          <span class="text-gray-400 text-sm">{{ fb.created_at|date:"M d, Y H:i" }}</span>
+        </div>
+
+        <p class="text-gray-300 text-sm mb-2">
+          <strong>👤 From:</strong> 
+          {% if fb.from_user %} {{ fb.from_user.username }} {% else %} <span class="italic text-gray-500">Deleted User</span> {% endif %}
+        </p>
+        <p class="text-gray-300 text-sm mb-2">
+          <strong>➡️ To:</strong> 
+          {% if fb.to_user %} {{ fb.to_user.username }} {% else %} <span class="italic text-gray-500">Deleted User</span> {% endif %}
+        </p>
+        <p class="text-gray-300 text-sm mb-2"><strong>🚗 Ride ID:</strong> {{ fb.ride.id }}</p>
+
+        <div class="flex items-center mt-3">
+          <span class="stars text-lg">
+            {% for i in "12345" %}
+              {% if fb.rating_value|floatformat:0 >= i|add:"0" %}
+                ★
+              {% else %}
+                ☆
+              {% endif %}
+            {% endfor %}
+          </span>
+          <span class="ml-2 text-gray-400">({{ fb.rating_value }}/5)</span>
+        </div>
+
+        {% if fb.comment %}
+          <p class="mt-3 text-gray-200 italic">“{{ fb.comment }}”</p>
+        {% else %}
+          <p class="mt-3 text-gray-500 italic">No comment provided.</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-center text-gray-400">No feedback found.</p>
+  {% endif %}
+</main>
+
+<footer class="bg-gray-800 text-gray-400 text-center p-4 mt-8">
+  © 2025 RideShare Admin Panel
+</footer>
+</body>
+</html>

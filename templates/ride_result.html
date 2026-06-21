@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ride Results</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        carrot: "#FF6B35",
+                        "carrot-dark": "#E55A2B",
+                        dark: "#0f1419",
+                        card: "#1e2832"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        #map { height: 380px; border-radius: 16px; }
+        .selected-card { border-color: #FFD700 !important; box-shadow: 0 0 15px rgba(255,215,0,0.6); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-dark via-slate-900 to-blue-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-card/90 backdrop-blur-lg border-b border-gray-700 p-4 shadow-lg">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <svg class="w-8 h-8 text-carrot" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z"/>
+                </svg>
+                <h1 class="text-2xl font-bold">Ride Search Results</h1>
+            </div>
+            <div class="flex gap-3">
+                <a href="find_ride" class="px-4 py-2 rounded-xl bg-gray-700 hover:bg-gray-600 transition">
+                    ← New Search
+                </a>
+                <a href="user_home" class="px-4 py-2 rounded-xl bg-carrot hover:bg-carrot-dark transition">
+                    Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-6">
+        <!-- Search Summary -->
+        <!-- <section class="bg-card/70 p-4 rounded-2xl border border-gray-600/40 mb-6">
+            <div class="flex flex-wrap gap-6 text-gray-300 text-sm">
+                <div class="flex items-center gap-2">
+                    <span class="text-green-400">📍</span>
+                    <span>From: <strong class="text-white">{{ rides.pickup_place }}</strong></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-red-400">🎯</span>
+                    <span>To: <strong class="text-white">{{ rides.drop_place }}</strong></span>
+                </div>
+            </div>
+        </section> -->
+
+        <!-- Map Section -->
+        <section class="mb-10">
+            <h2 class="text-xl font-semibold mb-3 text-carrot flex items-center gap-2">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/>
+                </svg>
+                Route Map
+            </h2>
+            <div id="map" class="shadow-xl border border-gray-700"></div>
+        </section>
+
+        <!-- Rides List -->
+        <section>
+            {% if rides %}
+                <div class="grid md:grid-cols-2 gap-6">
+                    {% for ride in rides %}
+                    <div class="ride-card bg-card/80 backdrop-blur p-5 rounded-2xl border border-gray-700 shadow-md hover:shadow-lg hover:border-carrot transition cursor-pointer" data-ride-id="{{ ride.offer_id }}">
+                        <h3 class="text-lg font-semibold mb-2 text-white">Driver: {{ ride.driver }}</h3>
+                        <p class="text-gray-300"><strong>Car:</strong> {{ ride.vehicle }}</p>
+                        <p class="text-gray-300"><strong>Date:</strong> {{ ride.ride_date }} at {{ ride.ride_time }}</p>
+                        <p class="text-gray-300"><strong>Your Date:</strong> {{ ride.date }} at {{ ride.time }}</p>
+                        <p class="text-gray-300"><strong>Match %:</strong> {{ ride.match_percentage }}</p>
+                        <p class="text-gray-300"><strong>Seats Left:</strong> {{ ride.available_seats }}</p>
+                        <p class="text-gray-300"><strong>Total Distance:</strong> {{ ride.total_distance }} KM</p>
+                        <p class="text-gray-300"><strong>Your Distance:</strong> {{ ride.rider_distance }} KM</p>
+                        <p class="text-gray-300"><strong>Total Trip Cost:</strong> ₹{{ ride.total_cost }}</p>
+                        <p class="text-gray-300"><strong>Your Share</strong> ₹{{ ride.rider_share }}</p>
+                        
+                        <form method="POST" action="{% url 'accept_ride' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="ride_id" value="{{ ride.offer_id }}">
+                            <input type="hidden" name="pickup_place" value="{{ ride.pickup_place}}">
+                            <input type="hidden" name="drop_place" value="{{ ride.drop_place }}">
+                            <input type="hidden" name="total_distance" value="{{ ride.total_distance }}">
+                            <input type="hidden" name="rider_distance" value="{{ ride.rider_distance }}">
+                            <input type="hidden" name="total_cost" value="{{ ride.total_cost }}">
+                            <input type="hidden" name="rider_share" value="{{ ride.rider_share }}">
+                            <input type="hidden" name="seats_selected" value="{{ ride.seats_selected }}">
+                            <button type="submit" class="w-full bg-carrot hover:bg-carrot-dark py-2 rounded-xl font-semibold transition">
+                                Accept Ride
+                            </button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-gray-400 text-lg mt-6">No matching rides found. 🚫</p>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+    const pickup = {{ pickup|safe }};
+    const drop = {{ drop|safe }};
+    const rides = {{ rides|safe }};
+
+    const map = L.map("map").setView(pickup.length ? pickup : [0, 0], 13);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
+
+    const bounds = [];
+
+    if (pickup.length) {
+        L.marker(pickup, { icon: L.icon({ iconUrl: "https://maps.google.com/mapfiles/ms/icons/green-dot.png", iconSize: [32, 32] }) })
+            .addTo(map).bindPopup("Pickup: {{ pickup_name }}");
+        bounds.push(pickup);
+    }
+
+    if (drop.length) {
+        L.marker(drop, { icon: L.icon({ iconUrl: "https://maps.google.com/mapfiles/ms/icons/red-dot.png", iconSize: [32, 32] }) })
+            .addTo(map).bindPopup("Drop: {{ drop_name }}");
+        bounds.push(drop);
+    }
+
+    // --- Distinguishable colors ---
+    const colorPalette = ["#00BFFF","#32CD32","#FFD700","#FF69B4","#8A2BE2","#FF8C00","#00FA9A","#FF1493","#1E90FF"];
+    let colorIndex = 0;
+
+    const routeLines = {};
+
+    rides.forEach(ride => {
+        if (ride.route_data) {
+            const color = colorPalette[colorIndex % colorPalette.length];
+            colorIndex++;
+            const routeLine = L.polyline(ride.route_data, { color: color, weight: 4, opacity: 0.8 }).addTo(map);
+            routeLine.bindPopup(`<b>${ride.driver}</b><br>${ride.vehicle}`);
+            bounds.push(...ride.route_data);
+
+            // Store route with its color
+            routeLines[ride.offer_id] = { line: routeLine, defaultColor: color };
+        }
+    });
+
+    if (bounds.length) map.fitBounds(bounds);
+
+    // --- Click to focus route ---
+    document.querySelectorAll(".ride-card").forEach(card => {
+        card.addEventListener("click", () => {
+            const rideId = card.dataset.rideId;
+
+            // Reset all routes to default
+            Object.values(routeLines).forEach(r => 
+                r.line.setStyle({ color: r.defaultColor, opacity: 0.3, weight: 3 })
+            );
+
+            // Highlight selected with the SAME color, just thicker/brighter
+            if (routeLines[rideId]) {
+                routeLines[rideId].line.setStyle({ 
+                    color: routeLines[rideId].defaultColor, 
+                    opacity: 1, 
+                    weight: 6 
+                });
+                map.fitBounds(routeLines[rideId].line.getBounds());
+            }
+
+            // Highlight selected card
+            document.querySelectorAll(".ride-card").forEach(c => c.classList.remove("selected-card"));
+            card.classList.add("selected-card");
+        });
+    });
+</script>
+
+
+</body>
+</html>

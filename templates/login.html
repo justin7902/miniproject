@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - RideShare</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        }
+        
+        .floating-animation {
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-25px) rotate(3deg); }
+        }
+        
+        .pulse-animation {
+            animation: pulse 4s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.3; }
+        }
+        
+        .form-container {
+            backdrop-filter: blur(10px);
+            background: rgba(31, 41, 55, 0.8);
+            border: 1px solid rgba(249, 115, 22, 0.2);
+        }
+        
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+        
+        .login-btn {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(249, 115, 22, 0.3);
+        }
+        
+        .road-animation {
+            animation: roadMove 15s linear infinite;
+        }
+        
+        @keyframes roadMove {
+            0% { transform: translateX(-100px); }
+            100% { transform: translateX(100px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 min-h-screen">
+        {% if messages %}
+  <div class="max-w-md mx-auto mt-4">
+    {% for message in messages %}
+      <div class="px-4 py-3 rounded-lg mb-2 
+        {% if message.tags == 'success' %} bg-green-600 text-white
+        {% elif message.tags == 'error' %} bg-red-600 text-white
+        {% elif message.tags == 'warning' %} bg-yellow-500 text-black
+        {% else %} bg-blue-600 text-white
+        {% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+    <!-- Navigation -->
+    <nav class="bg-gray-800 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <svg class="h-8 w-8 text-orange-500 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11C5.84 5 5.28 5.42 5.08 6.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                        </svg>
+                        <span class="text-2xl font-bold text-white">RideShare</span>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <a href="{% url 'index' %}" class="flex items-center text-gray-300 hover:text-orange-500 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 7v4H5.83l3.58-3.59L8 6l-6 6 6 6 1.41-1.41L5.83 13H21V7z"/>
+                        </svg>
+                        Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="gradient-bg min-h-screen flex items-center justify-center relative overflow-hidden">
+        <!-- Background Graphics -->
+        <div class="absolute inset-0">
+            <!-- Floating animated shapes -->
+            <div class="absolute top-20 left-10 w-28 h-28 rounded-full opacity-8 floating-animation" style="background: linear-gradient(45deg, #f97316, #ea580c); animation-delay: -1s;"></div>
+            <div class="absolute top-32 right-20 w-20 h-20 rounded-full opacity-12 floating-animation" style="background: linear-gradient(45deg, #fb923c, #f97316); animation-delay: -3s;"></div>
+            <div class="absolute bottom-32 left-1/4 w-24 h-24 rounded-full opacity-10 floating-animation" style="background: linear-gradient(45deg, #fdba74, #fb923c); animation-delay: -5s;"></div>
+            <div class="absolute bottom-20 right-1/3 w-16 h-16 rounded-full opacity-15 floating-animation" style="background: linear-gradient(45deg, #fed7aa, #fdba74); animation-delay: -2s;"></div>
+            
+            <!-- Car graphics -->
+            <svg class="absolute top-40 left-20 text-orange-500 opacity-15 floating-animation" width="80" height="80" viewBox="0 0 24 24" fill="currentColor" style="animation-delay: -4s;">
+                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11C5.84 5 5.28 5.42 5.08 6.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+            </svg>
+            
+            <svg class="absolute bottom-40 right-16 text-orange-400 opacity-12 floating-animation" width="60" height="60" viewBox="0 0 24 24" fill="currentColor" style="animation-delay: -6s;">
+                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11C5.84 5 5.28 5.42 5.08 6.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+            </svg>
+            
+            <!-- Road lines -->
+            <div class="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-20 road-animation"></div>
+            <div class="absolute top-1/3 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent opacity-15 road-animation" style="animation-delay: -5s;"></div>
+            
+            <!-- Connection dots -->
+            <div class="absolute top-1/4 left-1/3 w-2 h-2 bg-orange-500 rounded-full pulse-animation"></div>
+            <div class="absolute top-2/3 right-1/4 w-3 h-3 bg-orange-400 rounded-full pulse-animation" style="animation-delay: -2s;"></div>
+            <div class="absolute bottom-1/4 left-1/2 w-2 h-2 bg-orange-600 rounded-full pulse-animation" style="animation-delay: -4s;"></div>
+        </div>
+
+        <!-- Login Form Container -->
+        <div class="relative z-10 w-full max-w-md mx-4">
+            <div class="form-container rounded-2xl shadow-2xl p-8">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <div class="flex items-center justify-center mb-4">
+                        <svg class="h-12 w-12 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11C5.84 5 5.28 5.42 5.08 6.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-2">Welcome Back</h2>
+                    <p class="text-gray-400">Sign in to your RideShare account</p>
+                </div>
+
+                <!-- Login Form -->
+                <form class="space-y-6" action="{% url 'login' %}" method="POST">
+                    {% csrf_token %}
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-300 mb-2">
+                            Username
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                </svg>
+                            </div>
+                            <input
+                                id="username"
+                                name="username"
+                                type="text"
+                                required
+                                class="input-field block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                placeholder="Enter your username"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+                            Password
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                                </svg>
+                            </div>
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                required
+                                class="input-field block w-full pl-10 pr-3 py-3 border border-gray-600 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                placeholder="Enter your password"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Forgot Password Link -->
+                    <div class="text-right">
+                        <a href="{% url 'forgot_password' %}" class="text-sm text-orange-400 hover:text-orange-300 transition-colors">
+                            Forgot your password?
+                        </a>
+                    </div>
+
+                    <!-- Login Button -->
+                    <div>
+                        <button
+                            type="submit"
+                            class="login-btn w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                        >
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M10 17l5-5-5-5v10z"/>
+                            </svg>
+                            Sign In
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Sign Up Link -->
+                <div class="mt-8 text-center">
+                    <p class="text-sm text-gray-400">
+                        Don't have an account?
+                        <a href="{% url 'register' %}" class="font-medium text-orange-400 hover:text-orange-300 transition-colors ml-1">
+                            Sign up here
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97e62b44369e8afa',t:'MTc1Nzc1MTAzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+
+</body>
+</html>

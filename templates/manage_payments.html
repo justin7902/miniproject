@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Payments & Wallets</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1f2937, #0f172a);
+      color: #f9fafb;
+      font-family: 'Inter', sans-serif;
+    }
+    .section-title {
+      color: #ff8c42;
+      font-weight: bold;
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .card {
+      background-color: #111827;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    }
+    table th {
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen">
+
+<!-- Header -->
+<header class="bg-gray-800 p-4 shadow-lg">
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-orange-400">Manage Payments & Wallets</h1>
+    <a href="{% url 'admin_home' %}" 
+       class="px-4 py-2 bg-orange-500 rounded-lg hover:bg-orange-600 transition">← Dashboard</a>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto p-8 space-y-10">
+
+  <!-- Payments Section -->
+  <div class="card">
+    <h2 class="section-title">💳 Payments</h2>
+    {% if payments %}
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-700">
+        <thead class="bg-gray-800">
+          <tr>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">User</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Ride ID</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Car Type</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Amount Paid</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Payment Mode</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Date</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-700">
+          {% for payment in payments %}
+          <tr class="hover:bg-gray-800 transition duration-200">
+            <td class="px-6 py-4 font-medium">{{ payment.user.first_name }} {{ payment.user.last_name }}</td>
+            <td class="px-6 py-4">#{{ payment.ride.id }}</td>
+            <td class="px-6 py-4">{{ payment.ride.vehicle.vehicle_type|default:"N/A" }}</td>
+            <td class="px-6 py-4 text-green-400 font-semibold">₹{{ payment.amount_paid }}</td>
+            <td class="px-6 py-4">{{ payment.payment_mode|default:"N/A" }}</td>
+            <td class="px-6 py-4">{{ payment.payment_date|date:"Y-m-d H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-gray-400 text-center mt-4">No payments found.</p>
+    {% endif %}
+  </div>
+
+  <!-- Wallets Section -->
+  <div class="card">
+    <h2 class="section-title">💰 User Wallets</h2>
+
+    {% if wallets %}
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-700">
+        <thead class="bg-gray-800">
+          <tr>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">User</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Email</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Balance</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Last Top-up</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold text-white">Top-up Date</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-700">
+          {% for wallet in wallets %}
+          <tr class="hover:bg-gray-800 transition duration-200">
+            <td class="px-6 py-4 font-medium">
+              {{ wallet.user.first_name }} {{ wallet.user.last_name }}
+            </td>
+            <td class="px-6 py-4">{{ wallet.user.email }}</td>
+            <td class="px-6 py-4 text-green-400 font-semibold">₹{{ wallet.balance }}</td>
+            <td class="px-6 py-4">₹{{ wallet.last_topup }}</td>
+            <td class="px-6 py-4">
+              {{ wallet.last_topup_date|date:"Y-m-d H:i" }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-gray-400 text-center mt-4">No wallet records found.</p>
+    {% endif %}
+  </div>
+
+</main>
+
+<footer class="bg-gray-800 text-gray-400 text-center p-4 mt-8">
+  © 2025 RideShare Admin Panel
+</footer>
+
+</body>
+</html>
